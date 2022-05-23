@@ -21,19 +21,21 @@ private:
     int sock;
     int connection;
     int lstn;
+    int websocket;
     struct sockaddr_in address;
 
 public:
-    char buffer[1023];
+    char buffer[30000];
     Socket(int domain, int type, int protocol, int port, u_long addr, int backlog);
     int makeSocket(int domain, int type, int protocol);
     void configureSocketAddress(int sin_family, u_long addr, int port);
     void checkError(int value);
     int bindSocket(int sock, struct sockaddr_in address);
     int startListen(int sock, int backlog);
-    int startAccept(int sock, struct sockaddr_in address);
+    void startAccept(int sock, struct sockaddr_in address);
     int get_sock();
     int get_connection();
+    int get_websocket();
     struct sockaddr_in get_address();
 };
 }
