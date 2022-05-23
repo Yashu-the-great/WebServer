@@ -14,6 +14,6 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
-#include "./Networking/Socket.hpp"
+#include "../Networking/Socket.hpp"
 
 #endif /* webserver_hpp */
