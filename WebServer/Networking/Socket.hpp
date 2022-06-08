@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <unistd.h>
 #include <string.h>
 
 namespace WS {
@@ -25,8 +26,13 @@ private:
     struct sockaddr_in address;
 
 public:
-    char buffer[30000];
+    char buffer[3000000];
+    enum protocol {
+        TCP,
+        UDP
+    };
     Socket(int domain, int type, int protocol, int port, u_long addr, int backlog);
+    Socket(enum protocol p, int port, int backlog);
     int makeSocket(int domain, int type, int protocol);
     void configureSocketAddress(int sin_family, u_long addr, int port);
     void checkError(int value);
@@ -36,6 +42,10 @@ public:
     int get_sock();
     int get_connection();
     int get_websocket();
+    void send(char* message);
+    void recieve();
+    void recieve(char* user_buffer);
+    void stop();
     struct sockaddr_in get_address();
 };
 }

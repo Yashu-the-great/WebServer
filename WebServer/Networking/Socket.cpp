@@ -12,9 +12,27 @@ WS::Socket::Socket(int domain, int type, int protocol, int port, u_long addr, in
     configureSocketAddress(domain, addr, port);
     sock = makeSocket(domain, type, protocol);
     checkError(sock);
-    connection = bindSocket(sock, address);
+    connection = bindSocket(this->sock, this->address);
     checkError(connection);
-    lstn = startListen(sock, backlog);
+    lstn = startListen(this->sock, backlog);
+}
+
+WS::Socket::Socket(enum protocol p, int port, int backlog) {
+    switch(p) {
+        case TCP:   configureSocketAddress(AF_INET, SOCK_STREAM, port);
+            sock = makeSocket(AF_INET, SOCK_STREAM, 0);
+            checkError(sock);
+            connection = bindSocket(this->sock, this->address);
+            checkError(connection);
+            lstn = startListen(this->sock, backlog);
+
+        case UDP:   configureSocketAddress(AF_UNIX, SOCK_DGRAM, port);
+            sock = makeSocket(AF_UNIX, SOCK_DGRAM, 0);
+            checkError(sock);
+            connection = bindSocket(this->sock, this->address);
+            checkError(connection);
+            lstn = startListen(this->sock, backlog);
+    }
 }
 
 int WS::Socket::makeSocket(int domain, int type, int protocol) {
@@ -66,4 +84,22 @@ void WS::Socket::startAccept(int sock, struct sockaddr_in address) {
     int val = accept(sock, (struct sockaddr *) &address, &address_size);
     checkError(val);
     websocket = (int) val;
+}
+
+void WS::Socket::send(char* message) {
+    write(websocket, message,1000000);
+}
+
+void WS::Socket::recieve() {
+    memset(buffer, '\0', sizeof(buffer));
+    read(websocket, buffer, sizeof(buffer));
+}
+
+void WS::Socket::recieve(char* user_buffer) {
+    memset(&user_buffer, '\0', sizeof(user_buffer));
+    read(websocket, &user_buffer, sizeof(user_buffer));
+}
+
+void WS::Socket::stop() {
+    close(websocket);
 }
