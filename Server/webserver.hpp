@@ -16,4 +16,14 @@
 #include <string.h>
 #include "../Networking/Socket.hpp"
 
+extern "C" {
+    int isFileThere(char* path) {
+        FILE *file = fopen(path, "r");
+        if(file) {
+            fclose(file);
+            return 1;
+        } return 0;
+    }
+    
+}
 #endif /* webserver_hpp */
