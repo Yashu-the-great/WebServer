@@ -8,13 +8,12 @@
 #include "Socket.hpp"
 
 WS::Socket::Socket(int domain, int type, int protocol, int port, u_long addr, int backlog) {
-    
     configureSocketAddress(domain, addr, port);
     sock = makeSocket(domain, type, protocol);
     checkError(sock);
-    connection = bindSocket(this->sock, this->address);
+    connection = bindSocket(sock, address);
     checkError(connection);
-    lstn = startListen(this->sock, backlog);
+    lstn = startListen(sock, backlog);
 }
 
 WS::Socket::Socket(enum protocol p, int port, int backlog) {
@@ -22,16 +21,16 @@ WS::Socket::Socket(enum protocol p, int port, int backlog) {
         case TCP:   configureSocketAddress(AF_INET, SOCK_STREAM, port);
             sock = makeSocket(AF_INET, SOCK_STREAM, 0);
             checkError(sock);
-            connection = bindSocket(this->sock, this->address);
+            connection = bindSocket(sock, address);
             checkError(connection);
-            lstn = startListen(this->sock, backlog);
+            lstn = startListen(sock, backlog);
 
         case UDP:   configureSocketAddress(AF_UNIX, SOCK_DGRAM, port);
             sock = makeSocket(AF_UNIX, SOCK_DGRAM, 0);
             checkError(sock);
-            connection = bindSocket(this->sock, this->address);
+            connection = bindSocket(sock, address);
             checkError(connection);
-            lstn = startListen(this->sock, backlog);
+            lstn = startListen(sock, backlog);
     }
 }
 
@@ -86,13 +85,14 @@ void WS::Socket::startAccept(int sock, struct sockaddr_in address) {
     websocket = (int) val;
 }
 
-void WS::Socket::send(char* message) {
-    write(websocket, message,1000000);
+int WS::Socket::send(char* message) {
+    return write(websocket, message, strlen(message));
 }
 
-void WS::Socket::recieve() {
+int WS::Socket::recieve() {
     memset(buffer, '\0', sizeof(buffer));
-    read(websocket, buffer, sizeof(buffer));
+    // read(websocket, buffer, sizeof(buffer));
+    return recv(websocket, buffer, sizeof(buffer), 0);
 }
 
 void WS::Socket::recieve(char* user_buffer) {

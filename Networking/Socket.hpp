@@ -17,6 +17,13 @@
 #include <string.h>
 
 namespace WS {
+
+enum protocol {
+    TCP,
+    UDP
+};
+
+// For Sockets
 class Socket {
 private:
     int sock;
@@ -27,10 +34,6 @@ private:
 
 public:
     char buffer[3000000];
-    enum protocol {
-        TCP,
-        UDP
-    };
     Socket(int domain, int type, int protocol, int port, u_long addr, int backlog);
     Socket(enum protocol p, int port, int backlog);
     int makeSocket(int domain, int type, int protocol);
@@ -42,8 +45,8 @@ public:
     int get_sock();
     int get_connection();
     int get_websocket();
-    void send(char* message);
-    void recieve();
+    int send(char* message);
+    int recieve();
     void recieve(char* user_buffer);
     void stop();
     struct sockaddr_in get_address();
