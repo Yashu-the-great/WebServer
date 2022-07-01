@@ -19,17 +19,20 @@ int main(void) {
         reset();
         socket.startAccept(socket.get_sock(), socket.get_address());
         if(socket.recieve() != -1) {
-            cout << socket.buffer << endl;
-            // char* file = get_request_header_file(socket.buffer);
+            puts("\n\n-------------------- Request Recieved --------------------\n");
+            cout << "Request :: \n" << socket.buffer << endl;
             char* filePath = getFilePath(socket.buffer);
+            cout << "Server requested the following file : " << filePath << endl;
             if(strstr(socket.buffer, "/ ") != NULL) {
-                strcat(filePath,"t.html");
+                strcat(filePath,"index.html");
                 socket.sendFile(filePath);
             } else {
                 socket.sendFile(filePath);
             }
         }
         socket.stop();
+        puts("\n\n-------------------- Request Served --------------------\n");
+
     }
     return 0;
 }
