@@ -15,6 +15,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include "../Networking/Socket.hpp"
+#include "../FileSystems/FileSystems.hpp"
 
 extern "C" {
     int isFileThere(char* path) {
