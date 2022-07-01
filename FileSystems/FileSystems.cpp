@@ -1,5 +1,8 @@
 #include "FileSystems.hpp"
 
+/*
+* Variable that containsall mime types
+*/
 std::unordered_map<std::string, char*> mime_types =  {
   {"*3gpp", "audio/3gpp"},
   {"*jpm", "video/jpm"},
@@ -350,7 +353,14 @@ std::unordered_map<std::string, char*> mime_types =  {
   {"zip", "application/zip"},
 };
 
-char * FileSystem::get_request_header_file(char* response) {
+
+/*
+* Get the file from response header
+* @param reponse  Request send by the browser
+* @return char*
+*/
+
+char* FileSystem::get_request_header_file(char* response) {
     std::string s = response;
     s = strstr(s.c_str(), "/");
     int s2 = s.find(" ");
@@ -360,15 +370,20 @@ char * FileSystem::get_request_header_file(char* response) {
     return str;
 }
 
+
+/*
+* Function to read the file and return the read buffer
+* @param filePath Path to the file to be read.
+* @param isImage Boolean to specify if the file is an image or not
+* @return char*
+*/
+
 char* FileSystem::file_to_buffer(char* filePath, bool isImage) {
     char* buffer;
     FILE *fp;
-    try
-    {
-       fp = fopen(filePath, (isImage == true ? "rb" : "r"));
-    }
-    catch(const std::exception& e)
-    {
+    try {
+       fp = fopen(filePath, (isImage ? "rb" : "r"));
+    } catch(const std::exception& e) {
         return "";
     }
     long size;
@@ -382,9 +397,15 @@ char* FileSystem::file_to_buffer(char* filePath, bool isImage) {
     buffer = (char *) calloc(size, sizeof(char));
     fread(buffer, sizeof(char), size, fp);
     fclose(fp);
-    puts(buffer);
     return buffer;
 }
+
+
+/*
+* Function to get the extension of a file
+* @param fileName File Path/Name of the file
+* @return char* 
+*/
 
 char* FileSystem::get_extension(char* fileName) {
     try {
@@ -399,6 +420,13 @@ char* FileSystem::get_extension(char* fileName) {
     }
 }
 
+
+/*
+* Function to get the Path of the requested file from the browser
+* @param socketRequest Request from the web browser
+* @return char*
+*/
+
 char* FileSystem::getFilePath(char* socketRequest) {
     char* file = get_request_header_file(socketRequest);
     char tempfilePath[500];
@@ -409,6 +437,12 @@ char* FileSystem::getFilePath(char* socketRequest) {
     strcat(filePath, file);
     return filePath;
 }
+
+/*
+* Function to get the mime type of a file.
+* @param fileName Path/Name of the file
+* @return char*
+*/
 
 char* FileSystem::get_mime(char* fileName) {
     char* extension = get_extension(fileName);
