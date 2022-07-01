@@ -7,6 +7,17 @@
 
 #include "Socket.hpp"
 
+
+/*
+* Socket Constructor
+* @param domain Domain for the socket like AF_INET
+* @param type Type of socket based on your domain like SOCK_STREAM
+* @param protocol Protocol type for your socket. 0 should be the default.
+* @param port Port to start your server on
+* @param addr Address for the socket to be hosted on like INADDR_ANY
+* @param backlog
+*/
+
 WS::Socket::Socket(int domain, int type, int protocol, int port, u_long addr, int backlog) {
     configureSocketAddress(domain, addr, port);
     sock = makeSocket(domain, type, protocol);
@@ -104,6 +115,7 @@ void WS::Socket::stop() {
 }
 
 int WS::Socket::sendFile(char* filePath) {
+    puts(filePath);
     char* m = FileSystem::get_mime(filePath);
     if(m == "" or m == NULL) return 0;
     char header[strlen(m) + strlen("HTTP/1.1 200 OK\nConnection: close\nContent-Type:") + 10];
