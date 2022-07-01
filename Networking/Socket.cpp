@@ -91,7 +91,6 @@ int WS::Socket::send(char* message) {
 
 int WS::Socket::recieve() {
     memset(buffer, '\0', sizeof(buffer));
-    // read(websocket, buffer, sizeof(buffer));
     return recv(websocket, buffer, sizeof(buffer), 0);
 }
 
@@ -102,4 +101,22 @@ void WS::Socket::recieve(char* user_buffer) {
 
 void WS::Socket::stop() {
     close(websocket);
+}
+
+int WS::Socket::sendFile(char* filePath) {
+    char* m = FileSystem::get_mime(filePath);
+    if(m == "" or m == NULL) return 0;
+    char header[strlen(m) + strlen("HTTP/1.1 200 OK\nConnection: close\nContent-Type:") + 10];
+    strcpy(header,"HTTP/1.1 200 OK\nConnection: close\nContent-Type: ");
+    strcat(header,m);
+    strcat(header,"\r\n\r\n");
+    send(header);
+    if(strstr(m,"image") != NULL) {
+        char* file = FileSystem::file_to_buffer(filePath, true);
+        send(file);
+    } else {
+        char* file = FileSystem::file_to_buffer(filePath);
+        send(file);
+    }
+    return 1;
 }

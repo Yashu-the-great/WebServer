@@ -15,6 +15,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string.h>
+#include "../FileSystems/FileSystems.hpp"
 
 namespace WS {
 
@@ -33,7 +34,7 @@ private:
     struct sockaddr_in address;
 
 public:
-    char buffer[3000000];
+    char buffer[100000];
     Socket(int domain, int type, int protocol, int port, u_long addr, int backlog);
     Socket(enum protocol p, int port, int backlog);
     int makeSocket(int domain, int type, int protocol);
@@ -50,6 +51,8 @@ public:
     void recieve(char* user_buffer);
     void stop();
     struct sockaddr_in get_address();
-};
+
+    int sendFile(char* filePath);
+ };
 }
 #endif /* Socket_hpp */
