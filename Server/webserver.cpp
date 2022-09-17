@@ -22,7 +22,6 @@ int main(void) {
             puts("\n\n-------------------- Request Recieved --------------------\n");
             cout << "Request :: \n" << socket.buffer << endl;
             char* filePath = getFilePath(socket.buffer);
-            
             cout << "Server requested the following file : " << filePath << endl;
             if(strstr(socket.buffer, "/ ") != NULL) {
                 strcat(filePath,"index.html");

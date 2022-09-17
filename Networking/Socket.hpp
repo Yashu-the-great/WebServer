@@ -47,6 +47,7 @@ public:
     int get_connection();
     int get_websocket();
     int send(char* message);
+    int send(char* message, int size);
     int recieve();
     void recieve(char* user_buffer);
     void stop();

@@ -100,6 +100,10 @@ int WS::Socket::send(char* message) {
     return write(websocket, message, strlen(message));
 }
 
+int WS::Socket::send(char* message, int size) {
+    return write(websocket, message, size);
+}
+
 int WS::Socket::recieve() {
     memset(buffer, '\0', sizeof(buffer));
     return recv(websocket, buffer, sizeof(buffer), 0);
@@ -124,7 +128,7 @@ int WS::Socket::sendFile(char* filePath) {
     strcat(header,"\r\n\r\n");
     send(header);
     if(strstr(m,"image") != NULL) {
-  FILE *picture = fopen(filePath, "r");
+        FILE *picture = fopen(filePath, "r");
          if(picture == NULL) {
              return 1;
          }
@@ -134,7 +138,7 @@ int WS::Socket::sendFile(char* filePath) {
          char send_buffer[size]; // no link between BUFSIZE and the file size
          int nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
          while (!feof(picture)){
-             write(websocket, send_buffer, nb);
+            send(send_buffer, nb);
              nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
          }
     } else {
