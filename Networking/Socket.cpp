@@ -124,8 +124,19 @@ int WS::Socket::sendFile(char* filePath) {
     strcat(header,"\r\n\r\n");
     send(header);
     if(strstr(m,"image") != NULL) {
-        char* file = FileSystem::file_to_buffer(filePath, true);
-        send(file);
+  FILE *picture = fopen(filePath, "r");
+         if(picture == NULL) {
+             return 1;
+         }
+         fseek(picture, 0, SEEK_END);
+         int size = ftell(picture);
+         fseek(picture, 0, SEEK_SET);
+         char send_buffer[size]; // no link between BUFSIZE and the file size
+         int nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
+         while (!feof(picture)){
+             write(websocket, send_buffer, nb);
+             nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
+         }
     } else {
         char* file = FileSystem::file_to_buffer(filePath);
         send(file);
