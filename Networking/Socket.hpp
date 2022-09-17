@@ -39,7 +39,6 @@ public:
     Socket(enum protocol p, int port, int backlog);
     int makeSocket(int domain, int type, int protocol);
     void configureSocketAddress(int sin_family, u_long addr, int port);
-    void configureSocketAddress(int sin_family, char* addr, int port);
     void checkError(int value);
     int bindSocket(int sock, struct sockaddr_in address);
     int startListen(int sock, int backlog);
@@ -48,7 +47,6 @@ public:
     int get_connection();
     int get_websocket();
     int send(char* message);
-    int send(char* message, int size);
     int recieve();
     void recieve(char* user_buffer);
     void stop();
