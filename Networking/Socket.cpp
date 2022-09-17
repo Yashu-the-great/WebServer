@@ -27,24 +27,13 @@ WS::Socket::Socket(int domain, int type, int protocol, int port, u_long addr, in
     lstn = startListen(sock, backlog);
 }
 
-WS::Socket::Socket(enum protocol p, int port, int backlog) {
-    switch(p) {
-        case TCP:   configureSocketAddress(AF_INET, SOCK_STREAM, port);
-            sock = makeSocket(AF_INET, SOCK_STREAM, 0);
-            checkError(sock);
-            connection = bindSocket(sock, address);
-            checkError(connection);
-            lstn = startListen(sock, backlog);
-
-        case UDP:   configureSocketAddress(AF_UNIX, SOCK_DGRAM, port);
-            sock = makeSocket(AF_UNIX, SOCK_DGRAM, 0);
-            checkError(sock);
-            connection = bindSocket(sock, address);
-            checkError(connection);
-            lstn = startListen(sock, backlog);
-    }
-}
-
+/*
+ * Function to make a socket
+ * @param domain Domain Type of the socket
+ * @param type type of socket
+ * @param protocol protocol used in the socket
+ * @return int socket object created in C style socket
+ */
 int WS::Socket::makeSocket(int domain, int type, int protocol) {
     return socket(domain,type, protocol);
 }
@@ -100,6 +89,10 @@ int WS::Socket::send(char* message) {
     return write(websocket, message, strlen(message));
 }
 
+int WS::Socket::send(char* message, int size) {
+    return write(websocket, message, size);
+}
+
 int WS::Socket::recieve() {
     memset(buffer, '\0', sizeof(buffer));
     return recv(websocket, buffer, sizeof(buffer), 0);
@@ -124,8 +117,19 @@ int WS::Socket::sendFile(char* filePath) {
     strcat(header,"\r\n\r\n");
     send(header);
     if(strstr(m,"image") != NULL) {
-        char* file = FileSystem::file_to_buffer(filePath, true);
-        send(file);
+        FILE *picture = fopen(filePath, "r");
+        if(picture == NULL) {
+            return 1;
+        }
+        fseek(picture, 0, SEEK_END);
+        int size = ftell(picture);
+        fseek(picture, 0, SEEK_SET);
+        char send_buffer[size]; // no link between BUFSIZE and the file size
+        int nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
+        while (!feof(picture)){
+            write(websocket, send_buffer, nb);
+            nb = fread(send_buffer, 1, sizeof(send_buffer), picture);
+        }
     } else {
         char* file = FileSystem::file_to_buffer(filePath);
         send(file);

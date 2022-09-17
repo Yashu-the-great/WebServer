@@ -13,7 +13,7 @@ using namespace FileSystem;
 int main(void) {
 
     Socket socket = Socket(AF_INET, SOCK_STREAM, 0, 8000, INADDR_ANY, 5);
-    while(1) {
+    while(true) {
         green();
         printf("[+] Listening [+] \n\n");
         reset();
